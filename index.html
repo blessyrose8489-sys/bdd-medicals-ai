@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>B.D.D Medicals - AI Powered Medical Image & Patient Management System</title>
+  
+  <!-- Meta Descriptions & Fonts -->
+  <meta name="description" content="AI Powered Medical Image Triage & Patient Management Platform for B.D.D Medicals">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       STARTUP INTRO VIDEO (AI_powered_healthcare_intro_animation)
+       ========================================================================= -->
+  <div id="introVideoOverlay" class="intro-video-overlay">
+    <video id="introVideo" preload="auto" autoplay muted playsinline class="intro-video-element">
+      <source src="assets/AI_powered_healthcare_intro_animation.mp4" type="video/mp4">
+      <source src="assets/AI_powered_healthcare_intro_animation.webm" type="video/webm">
+      <source src="assets/AI_powered_healthcare_intro_animation" type="video/mp4">
+      <source src="assets/AI_powered_healthcare_animation.mp4" type="video/mp4">
+      <source src="assets/AI_powered_healthcare_intro_anim.mp4" type="video/mp4">
+      <source src="assets/AI_powered_healthcare.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="mainNavbar">
+    <a href="#" class="brand-logo" id="brandLogoBtn">
+      <div class="brand-icon-wrapper">
+        <i data-lucide="activity"></i>
+      </div>
+      <div>
+        B.D.D <span class="brand-highlight">Medicals</span>
+      </div>
+    </a>
+
+    <!-- Demo Role Switcher -->
+    <div class="role-switcher-container">
+      <button class="role-btn active" id="navIntakeBtn" onclick="app.switchView('landing')">
+        <i data-lucide="stethoscope"></i> Health Intake
+      </button>
+      <button class="role-btn" id="navCoachBtn" onclick="app.switchView('lifestyle-coach')">
+        <i data-lucide="sparkles"></i> AI Lifestyle Coach
+      </button>
+      <button class="role-btn" id="navPatientBtn" onclick="app.switchView('patient-dashboard')">
+        <i data-lucide="user"></i> Patient Portal
+      </button>
+      <button class="role-btn" id="navDoctorBtn" onclick="app.switchView('doctor-dashboard')">
+        <i data-lucide="microscope"></i> Doctor DICOM
+      </button>
+      <button class="role-btn" id="navAdminBtn" onclick="app.switchView('admin-dashboard')">
+        <i data-lucide="layout-dashboard"></i> Admin Suite
+      </button>
+    </div>
+
+    <!-- Emergency Hotline Trigger -->
+    <button class="btn-emergency" onclick="app.openEmergencyModal()">
+      <i data-lucide="alert-triangle"></i> Emergency Help
+    </button>
+  </nav>
+
+  <!-- Main Application Container -->
+  <main class="container">
+
+    <!-- =========================================================================
+         FIRST SCREEN / WELCOME LANDING PAGE
+         ========================================================================= -->
+    <section id="view-landing" class="view-section active">
+      <div class="welcome-hero">
+        <div class="welcome-badge">
+          <i data-lucide="sparkles"></i> Next-Gen AI Health Assessment
+        </div>
+
+        <h1 class="welcome-title">Welcome to B.D.D Medicals</h1>
+        
+        <p class="welcome-subtitle">
+          Describe your health concern and let our AI guide you to the next step.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn-primary-glow" onclick="app.startAssessment()">
+            <i data-lucide="heart-pulse"></i> Start Health Assessment
+          </button>
+
+          <button class="btn-secondary-glass" onclick="app.openEmergencyModal()">
+            <i data-lucide="phone-call"></i> Emergency Help
+          </button>
+        </div>
+
+        <!-- Progress Step Preview -->
+        <div class="glass-card" style="margin-top: 2rem;">
+          <h4 style="color: var(--primary-300); margin-bottom: 1.25rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Assessment Overview Workflow
+          </h4>
+          <div class="preview-grid">
+            <div class="preview-card">
+              <div class="preview-icon"><i data-lucide="file-text"></i></div>
+              <h4>1. Intake Details</h4>
+              <p>Personal profile, symptoms, pain scale, and duration.</p>
+            </div>
+            <div class="preview-card">
+              <div class="preview-icon"><i data-lucide="brain-circuit"></i></div>
+              <h4>2. AI Analysis</h4>
+              <p>Instant triage, potential condition mapping & urgency score.</p>
+            </div>
+            <div class="preview-card">
+              <div class="preview-icon"><i data-lucide="award"></i></div>
+              <h4>3. Solution Route</h4>
+              <p>Specialist matching, recommended tests & self-care tips.</p>
+            </div>
+            <div class="preview-card">
+              <div class="preview-icon"><i data-lucide="file-check"></i></div>
+              <h4>4. Specialist Review</h4>
+              <p>Doctor scan inspection & DICOM analysis dashboard.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         PATIENT HEALTH INTAKE WIZARD (STEPS 1 TO 6)
+         ========================================================================= -->
+    <section id="view-intake" class="view-section">
+      <!-- Wizard Progress Header -->
+      <div class="wizard-progress-wrapper glass-card" style="padding: 1.5rem 2rem;">
+        <div class="wizard-progress-bar">
+          <div class="wizard-progress-fill" id="progressFill"></div>
+          
+          <div class="step-item active" id="stepIndicator-1">
+            <div class="step-circle">1</div>
+            <span class="step-label">Personal</span>
+          </div>
+          <div class="step-item" id="stepIndicator-2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Problem</span>
+          </div>
+          <div class="step-item" id="stepIndicator-3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Symptoms</span>
+          </div>
+          <div class="step-item" id="stepIndicator-4">
+            <div class="step-circle">4</div>
+            <span class="step-label">Pain Details</span>
+          </div>
+          <div class="step-item" id="stepIndicator-5">
+            <div class="step-circle">5</div>
+            <span class="step-label">Medical Images</span>
+          </div>
+          <div class="step-item" id="stepIndicator-6">
+            <div class="step-circle">6</div>
+            <span class="step-label">AI Analysis</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step Container Card -->
+      <div class="glass-card">
+        <form id="intakeForm" onsubmit="event.preventDefault();">
+          
+          <!-- STEP 1: PERSONAL INFORMATION -->
+          <div id="step-1" class="wizard-step">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="user-check" style="color: var(--primary-400);"></i> Step 1 – Personal Information
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Please provide basic details to help customize your medical intake record.</p>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="fullName"><i data-lucide="user"></i> Full Name *</label>
+                <input type="text" id="fullName" class="form-input" placeholder="e.g. Sarah Jenkins" value="Sarah Jenkins" required>
+              </div>
+
+              <div class="form-group">
+                <label for="age"><i data-lucide="calendar"></i> Age *</label>
+                <input type="number" id="age" class="form-input" placeholder="e.g. 34" value="34" min="1" max="120" required>
+              </div>
+
+              <div class="form-group">
+                <label for="gender"><i data-lucide="users"></i> Gender *</label>
+                <select id="gender" class="form-select" required>
+                  <option value="Female" selected>Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other / Non-Binary</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="mobile"><i data-lucide="phone"></i> Mobile Number *</label>
+                <input type="tel" id="mobile" class="form-input" placeholder="+1 (555) 234-5678" value="+1 (555) 234-5678" required>
+              </div>
+
+              <div class="form-group">
+                <label for="email"><i data-lucide="mail"></i> Email Address *</label>
+                <input type="email" id="email" class="form-input" placeholder="sarah.j@example.com" value="sarah.j@example.com" required>
+              </div>
+
+              <div class="form-group">
+                <label for="bloodGroup"><i data-lucide="droplet"></i> Blood Group</label>
+                <select id="bloodGroup" class="form-select">
+                  <option value="O+">O Positive (O+)</option>
+                  <option value="A+">A Positive (A+)</option>
+                  <option value="B+" selected>B Positive (B+)</option>
+                  <option value="AB+">AB Positive (AB+)</option>
+                  <option value="O-">O Negative (O-)</option>
+                  <option value="A-">A Negative (A-)</option>
+                  <option value="B-">B Negative (B-)</option>
+                  <option value="AB-">AB Negative (AB-)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="height"><i data-lucide="ruler"></i> Height (cm)</label>
+                <input type="number" id="height" class="form-input" placeholder="168" value="168">
+              </div>
+
+              <div class="form-group">
+                <label for="weight"><i data-lucide="scale"></i> Weight (kg)</label>
+                <input type="number" id="weight" class="form-input" placeholder="62" value="62">
+              </div>
+
+              <div class="form-group full-width">
+                <label for="address"><i data-lucide="map-pin"></i> Residential Address</label>
+                <input type="text" id="address" class="form-input" placeholder="742 Evergreen Terrace, Springfield" value="742 Evergreen Terrace, Springfield">
+              </div>
+
+              <div class="form-group">
+                <label for="medicalConditions"><i data-lucide="file-heart"></i> Existing Medical Conditions</label>
+                <input type="text" id="medicalConditions" class="form-input" placeholder="e.g. Mild Asthma, Hypertension" value="Mild Asthma">
+              </div>
+
+              <div class="form-group">
+                <label for="allergies"><i data-lucide="alert-circle"></i> Allergies</label>
+                <input type="text" id="allergies" class="form-input" placeholder="e.g. Penicillin, Peanuts" value="Penicillin">
+              </div>
+
+              <div class="form-group">
+                <label for="medications"><i data-lucide="pill"></i> Current Medications</label>
+                <input type="text" id="medications" class="form-input" placeholder="e.g. Albuterol Inhaler" value="Albuterol Inhaler">
+              </div>
+
+              <div class="form-group">
+                <label for="emergencyContact"><i data-lucide="shield-alert"></i> Emergency Contact Number *</label>
+                <input type="tel" id="emergencyContact" class="form-input" placeholder="+1 (555) 999-0011" value="+1 (555) 999-0011" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: HEALTH PROBLEM (MULTILINGUAL AI) -->
+          <div id="step-2" class="wizard-step" style="display: none;">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="globe" style="color: var(--teal-400);"></i> Tell us about your health problem.
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+              You can type in any language. Our AI will understand your symptoms and guide you.
+            </p>
+
+            <div class="form-group full-width">
+              <label for="healthProblemText" style="font-size: 1.05rem; color: #fff; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Describe your health concern:</span>
+                <span style="font-size: 0.8rem; color: var(--teal-400); font-weight: 500;">
+                  <i data-lucide="sparkles"></i> Multilingual & Tanglish AI Active
+                </span>
+              </label>
+
+              <div class="textarea-wrapper">
+                <textarea id="healthProblemText" class="form-textarea" style="min-height: 170px; font-size: 1.05rem; padding-right: 4rem;" placeholder="Enaku rendu naala fever iruku." oninput="app.onMultilingualInput(this.value)"></textarea>
+                
+                <!-- Voice Input Microphone Button -->
+                <button type="button" class="mic-btn" id="micBtn" onclick="app.toggleVoiceInput()" title="Click to speak (Voice-to-Text)">
+                  <i data-lucide="mic"></i>
+                </button>
+              </div>
+
+              <!-- Live AI Language Detection & NLP Parser Feedback -->
+              <div id="aiLanguageBadge" class="ai-lang-badge" style="display: none;">
+                <span class="ai-lang-tag" id="aiLangTag">Tanglish (Tamil + English)</span>
+                <span id="aiParsedSummary" style="font-size: 0.85rem; color: #fff;">
+                  <i data-lucide="brain"></i> Extracted Symptoms: Chest Pain (Severity 5/10)
+                </span>
+              </div>
+
+              <!-- Reassurance Notice Banner -->
+              <div class="disclaimer-box" style="margin-top: 1rem; background: rgba(14, 165, 233, 0.1); border-color: rgba(14, 165, 233, 0.3); color: var(--primary-200);">
+                <i data-lucide="languages" style="color: var(--primary-400); flex-shrink: 0;"></i>
+                <span>Type naturally in your own language. B.D.D Medicals AI understands multilingual and mixed-language input.</span>
+              </div>
+
+              <!-- Multilingual Sample Prompt Chips -->
+              <div style="margin-top: 1.25rem;">
+                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Or click a multilingual example:</span>
+                <div class="prompt-chips">
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('Enaku rendu naala chest pain iruku.')">
+                    🇮🇳 "Enaku rendu naala chest pain iruku." (Tanglish)
+                  </span>
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('எனக்கு இரண்டு நாட்களாக மார்பு வலி உள்ளது.')">
+                    🇮🇳 "எனக்கு இரண்டு நாட்களாக மார்பு வலி உள்ளது." (Tamil)
+                  </span>
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('Mujhe saans lene mein dikkat ho rahi hai.')">
+                    🇮🇳 "Mujhe saans lene mein dikkat ho rahi hai." (Hinglish/Hindi)
+                  </span>
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('Vayiru romba valikuthu.')">
+                    🇮🇳 "Vayiru romba valikuthu." (Tanglish)
+                  </span>
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('Thalai romba valikuthu.')">
+                    🇮🇳 "Thalai romba valikuthu." (Tanglish)
+                  </span>
+                  <span class="chip-shortcut" onclick="app.setQuickPrompt('I have severe headache and fever.')">
+                    🇬🇧 "I have severe headache and fever." (English)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: SYMPTOMS CHIPS -->
+          <div id="step-3" class="wizard-step" style="display: none;">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="list-checks" style="color: var(--primary-300);"></i> Step 3 – Symptoms Selector
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Select all symptoms that apply to your current condition.</p>
+
+            <div class="symptom-search-box">
+              <input type="text" id="symptomSearch" class="form-input" placeholder="🔍 Search symptoms (e.g. Fever, Pain, Rash...)" onkeyup="app.filterSymptoms()">
+            </div>
+
+            <div class="symptoms-grid" id="symptomsGrid">
+              <!-- Dynamically populated via JavaScript -->
+            </div>
+          </div>
+
+          <!-- STEP 4: PAIN DETAILS & BODY REGION -->
+          <div id="step-4" class="wizard-step" style="display: none;">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="crosshair" style="color: var(--rose-500);"></i> Step 4 – Pain Details & Region
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Select the anatomical region and rate the severity of your pain.</p>
+
+            <h4 style="color: var(--primary-200); margin-bottom: 0.75rem;">Where is the pain located?</h4>
+            <div class="body-regions-grid" id="bodyRegionsGrid">
+              <!-- Dynamically rendered body region cards -->
+            </div>
+
+            <!-- Pain Slider -->
+            <div class="pain-slider-wrapper">
+              <div class="pain-display">
+                <span style="font-weight: 700; color: #fff; font-size: 1.1rem;">Pain Level Severity:</span>
+                <span class="pain-value-badge" id="painBadge" style="background: var(--amber-500);">Level 5 / 10</span>
+              </div>
+              <input type="range" min="1" max="10" value="5" class="pain-slider" id="painRange" oninput="app.updatePainLevel(this.value)">
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                <span>1 - Mild Discomfort</span>
+                <span>5 - Moderate Pain</span>
+                <span>10 - Severe / Unbearable</span>
+              </div>
+            </div>
+
+            <!-- Duration Selector -->
+            <div class="form-group">
+              <label for="painDuration"><i data-lucide="clock"></i> How long have you experienced this?</label>
+              <select id="painDuration" class="form-select">
+                <option value="Today">Today (Started recently)</option>
+                <option value="2 Days" selected>2 Days</option>
+                <option value="1 Week">1 Week</option>
+                <option value="1 Month">1 Month</option>
+                <option value="More than 1 Month">More than 1 Month (Chronic)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- STEP 5: MEDICAL IMAGE & REPORT UPLOAD -->
+          <div id="step-5" class="wizard-step" style="display: none;">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="file-up" style="color: var(--teal-400);"></i> Step 5 – Medical Image & Report Upload
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Do you have any existing medical images, scans, or laboratory reports?</p>
+
+            <h4 style="color: var(--primary-200); margin-bottom: 1rem;">Select Report Type:</h4>
+            <div class="report-type-selector" id="reportTypeSelector">
+              <button class="report-type-btn selected" onclick="app.selectReportType('No', this)">No Report</button>
+              <button class="report-type-btn" onclick="app.selectReportType('X-Ray', this)">X-Ray</button>
+              <button class="report-type-btn" onclick="app.selectReportType('MRI', this)">MRI</button>
+              <button class="report-type-btn" onclick="app.selectReportType('CT Scan', this)">CT Scan</button>
+              <button class="report-type-btn" onclick="app.selectReportType('Ultrasound', this)">Ultrasound</button>
+              <button class="report-type-btn" onclick="app.selectReportType('Blood Report', this)">Blood Report</button>
+              <button class="report-type-btn" onclick="app.selectReportType('ECG', this)">ECG</button>
+              <button class="report-type-btn" onclick="app.selectReportType('Prescription', this)">Prescription</button>
+              <button class="report-type-btn" onclick="app.selectReportType('Other Report', this)">Other</button>
+            </div>
+
+            <!-- Conditional Upload Box -->
+            <div id="uploadDropzoneSection" style="display: none;">
+              <div class="dropzone-box" id="dropzoneBox" onclick="document.getElementById('fileInput').click()">
+                <div class="dropzone-icon"><i data-lucide="upload-cloud"></i></div>
+                <h4 style="color: #fff; margin-bottom: 0.5rem;">Drag & Drop your Medical File here</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Supports DICOM (.dcm), JPG, PNG, PDF (Max 50MB)</p>
+                <button class="btn-secondary-glass" style="margin: 0 auto; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                  Browse Files
+                </button>
+                <input type="file" id="fileInput" style="display: none;" onchange="app.handleFileUpload(this.files)">
+              </div>
+
+              <!-- Uploaded Preview Status -->
+              <div id="fileUploadStatus" style="display: none; margin-top: 1rem;" class="result-card-item">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <i data-lucide="file-check" style="color: var(--emerald-500); font-size: 1.5rem;"></i>
+                    <div>
+                      <strong id="uploadedFileName" style="color: #fff; font-size: 0.95rem;">Chest_XRay_2026.jpg</strong>
+                      <div id="uploadedFileSize" style="color: var(--text-muted); font-size: 0.8rem;">3.4 MB • DICOM Ready</div>
+                    </div>
+                  </div>
+                  <button style="background: transparent; border: none; color: var(--rose-500); cursor: pointer;" onclick="app.removeUploadedFile()">
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="noUploadMessage" class="disclaimer-box" style="margin-top: 1rem;">
+              <i data-lucide="info"></i> If you select "No", you will skip image upload completely and proceed directly to AI Analysis.
+            </div>
+          </div>
+
+          <!-- STEP 6: AI PRELIMINARY ANALYSIS RESULTS -->
+          <div id="step-6" class="wizard-step" style="display: none;">
+            <h2 style="color: #fff; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+              <i data-lucide="brain-circuit" style="color: var(--primary-400);"></i> Step 6 – AI Preliminary Triage Analysis
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Real-time AI diagnostic synthesis based on your clinical inputs.</p>
+
+            <div id="aiResultsContent">
+              <!-- Dynamically injected after AI synthesis -->
+            </div>
+          </div>
+
+          <!-- Wizard Navigation Buttons -->
+          <div class="wizard-controls">
+            <button type="button" class="btn-secondary-glass" id="prevBtn" onclick="app.prevStep()" style="visibility: hidden;">
+              <i data-lucide="arrow-left"></i> Previous
+            </button>
+
+            <button type="button" class="btn-primary-glow" id="nextBtn" onclick="app.nextStep()">
+              Next Step <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         AUTOMATIC REDIRECTION ANIMATION SCREEN
+         ========================================================================= -->
+    <section id="view-redirecting" class="view-section">
+      <div class="glass-card ai-loader-container">
+        <div class="ai-pulse-ring">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <h2 style="color: #fff; font-size: 2rem; margin-bottom: 0.75rem;">Analyzing Medical Triage & Department Routing...</h2>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 1.5rem;" id="redirectSubtext">
+          Matching reported symptoms with specialist clinical models...
+        </p>
+        
+        <div style="width: 280px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 999px; margin: 0 auto; overflow: hidden;">
+          <div style="width: 100%; height: 100%; background: linear-gradient(90deg, var(--primary-500), var(--teal-400)); animation: pulseGlow 1.5s infinite;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SOLUTION RECOMMENDATION PAGE
+         ========================================================================= -->
+    <section id="view-solution" class="view-section">
+      <div class="solution-header">
+        <div>
+          <span class="welcome-badge"><i data-lucide="check-circle-2"></i> Clinical Solution Match</span>
+          <h1 style="color: #fff; font-size: 2.25rem;">Triage Recommendation Page</h1>
+        </div>
+
+        <button class="btn-secondary-glass" onclick="app.downloadSummaryPDF()">
+          <i data-lucide="download"></i> Download Summary PDF
+        </button>
+      </div>
+
+      <!-- Department Hero Card -->
+      <div class="solution-dept-hero">
+        <div class="solution-dept-icon" id="solDeptIcon">
+          <i data-lucide="heart-pulse"></i>
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+            <h2 id="solDeptName" style="color: #fff; font-size: 1.85rem;">Cardiology Department</h2>
+            <span class="urgency-badge urgency-high" id="solPriorityBadge">High Priority</span>
+          </div>
+          <p id="solDeptDesc" style="color: var(--primary-200); font-size: 1.05rem; max-width: 700px;">
+            Specialized cardiac care recommended based on reported chest discomfort and symptoms.
+          </p>
+        </div>
+      </div>
+
+      <!-- Detail Grid Cards -->
+      <div class="ai-result-grid" style="margin-bottom: 2rem;">
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h4 style="color: var(--primary-300); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="user"></i> Patient Summary
+          </h4>
+          <div id="solPatientSummary" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;"></div>
+        </div>
+
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h4 style="color: var(--teal-300); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="stethoscope"></i> Recommended Specialist
+          </h4>
+          <div id="solDoctorType" style="color: #fff; font-weight: 700; font-size: 1.1rem;"></div>
+          <div id="solRecommendedTests" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;"></div>
+        </div>
+
+        <div class="glass-card" style="padding: 1.5rem;">
+          <h4 style="color: var(--amber-500); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="shield-check"></i> Self-Care Advice
+          </h4>
+          <ul id="solSelfCareList" style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.25rem; line-height: 1.6;"></ul>
+        </div>
+      </div>
+
+      <!-- Action Buttons Bar -->
+      <div class="glass-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div>
+          <h4 style="color: #fff;">Next Steps for Patient</h4>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Register your profile to book appointment or view your AI Lifestyle Coach Plan.</p>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button class="btn-secondary-glass" onclick="app.switchView('lifestyle-coach')">
+            <i data-lucide="sparkles"></i> Open AI Lifestyle Coach
+          </button>
+          <button class="btn-primary-glow" onclick="app.proceedToRegistration()">
+            Continue Registration <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         AI LIFESTYLE COACH VIEW
+         ========================================================================= -->
+    <section id="view-lifestyle-coach" class="view-section">
+      <!-- Lifestyle Coach Hero Header -->
+      <div class="lifestyle-hero">
+        <div>
+          <div class="wellness-badge" style="margin-bottom: 0.75rem;">
+            <i data-lucide="sparkles"></i> Personalized Wellness Plan
+          </div>
+          <h1 style="color: #fff; font-size: 2.25rem; margin-bottom: 0.5rem;">Your AI Lifestyle Coach</h1>
+          <p style="color: var(--primary-100); font-size: 0.95rem; max-width: 750px; line-height: 1.6;">
+            Based on the information you shared, B.D.D Medicals AI has prepared a personalized lifestyle plan to help you build healthier daily habits. This guidance is for general wellness and should not replace advice from a qualified healthcare professional.
+          </p>
+        </div>
+
+        <!-- Circular Completion Progress Indicator -->
+        <div style="text-align: center;">
+          <div class="circular-progress-wrapper">
+            <svg class="circular-progress-svg">
+              <defs>
+                <linearGradient id="emeraldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="100%" stop-color="#0ea5e9" />
+                </linearGradient>
+              </defs>
+              <circle class="circular-bg-ring" cx="70" cy="70" r="58"></circle>
+              <circle class="circular-fill-ring" id="circularProgressFill" cx="70" cy="70" r="58"></circle>
+            </svg>
+            <div class="circular-text-value" id="circularProgressText">0%</div>
+          </div>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Daily Habit Progress</span>
+        </div>
+      </div>
+
+      <!-- Rotating Motivational Quote Banner -->
+      <div class="quote-banner">
+        <i data-lucide="heart" style="color: var(--rose-500);"></i>
+        <span id="motivationalQuoteText">"Small healthy habits create big improvements."</span>
+      </div>
+
+      <!-- Grid Layout for Personalized Daily Plan & Habit Tracker -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Personalized Daily Plan Card -->
+        <div class="glass-card">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="sun" style="color: var(--amber-500);"></i> Personalized Daily Plan
+          </h3>
+          <div id="dailyPlanContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Dynamically populated daily targets -->
+          </div>
+        </div>
+
+        <!-- Healthy Habit Tracker Checklist -->
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+              <i data-lucide="check-square" style="color: var(--emerald-500);"></i> Healthy Habit Tracker
+            </h3>
+            <span style="font-size: 0.85rem; color: var(--teal-400); font-weight: 700;" id="habitCompletionCounter">0 / 7 Done</span>
+          </div>
+
+          <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 999px; overflow: hidden; margin-bottom: 1.25rem;">
+            <div id="habitProgressBar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald-500), var(--primary-400)); transition: width 0.4s ease;"></div>
+          </div>
+
+          <div class="habit-checklist" id="habitChecklistContainer">
+            <!-- Dynamically populated checklist items -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Nutrition Guidance & Activity Recommendations Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        
+        <!-- Nutrition Guidance Card -->
+        <div class="glass-card">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="apple" style="color: var(--teal-400);"></i> Nutrition Guidance
+          </h3>
+
+          <div style="margin-bottom: 1.25rem;">
+            <strong style="color: var(--emerald-500); font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">
+              <i data-lucide="check-circle-2"></i> Foods to Include:
+            </strong>
+            <div id="foodsToIncludeBox"></div>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <strong style="color: var(--rose-500); font-size: 0.9rem; display: block; margin-bottom: 0.5rem;">
+              <i data-lucide="x-circle"></i> Foods to Reduce:
+            </strong>
+            <div id="foodsToReduceBox"></div>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 0.85rem; padding: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+            <strong style="color: #fff;">💡 Healthy Snacks:</strong> Almonds, Apple slices with peanut butter, Greek yogurt with berries.
+          </div>
+        </div>
+
+        <!-- Activity Recommendations Card -->
+        <div class="glass-card">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="dumbbell" style="color: var(--indigo-500);"></i> Suitable Physical Activities
+          </h3>
+          <div id="activitiesContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Dynamically populated activities or rest advisory -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Weekly Health Goals -->
+      <div class="glass-card" style="margin-bottom: 2rem;">
+        <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i data-lucide="target" style="color: var(--primary-300);"></i> Weekly Health Goals
+        </h3>
+        <div class="preview-grid" id="weeklyGoalsGrid">
+          <!-- Dynamically populated weekly goals -->
+        </div>
+      </div>
+
+      <!-- Important Disclaimer Banner -->
+      <div class="disclaimer-box" style="margin-bottom: 2rem; background: rgba(15, 23, 42, 0.8); border-color: var(--primary-400);">
+        <i data-lucide="shield-alert" style="color: var(--primary-400); flex-shrink: 0; font-size: 1.5rem;"></i>
+        <span><strong>IMPORTANT DISCLAIMER:</strong> This lifestyle guidance is intended for general wellness and education. It is not a medical diagnosis or treatment plan. Always follow the advice of your qualified healthcare professional for medical decisions.</span>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         PATIENT REGISTRATION & CONFIRMATION
+         ========================================================================= -->
+    <section id="view-registration" class="view-section">
+      <div class="glass-card" style="max-width: 650px; margin: 2rem auto; text-align: center; padding: 3rem 2rem;">
+        <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.2); border: 2px solid var(--emerald-500); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--emerald-500); font-size: 2.5rem;">
+          <i data-lucide="user-check"></i>
+        </div>
+
+        <h1 style="color: #fff; margin-bottom: 0.5rem;">Patient Account Generated</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Your health intake summary and patient profile have been registered.</p>
+
+        <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-glass); border-radius: 1.25rem; padding: 1.5rem; margin-bottom: 2rem; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="color: var(--text-muted); font-size: 0.9rem;">Generated Patient ID:</span>
+            <span id="regPatientId" style="font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--primary-300);">SM-2026-8942</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="color: var(--text-muted); font-size: 0.9rem;">Registered Name:</span>
+            <span id="regPatientName" style="color: #fff; font-weight: 600;">Sarah Jenkins</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted); font-size: 0.9rem;">Assigned Department:</span>
+            <span id="regDeptName" style="color: var(--teal-400); font-weight: 600;">Cardiology</span>
+          </div>
+        </div>
+
+        <button class="btn-primary-glow" style="margin: 0 auto; width: 100%; justify-content: center;" onclick="app.switchView('patient-dashboard')">
+          Access Patient Dashboard <i data-lucide="arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         PATIENT DASHBOARD
+         ========================================================================= -->
+    <section id="view-patient-dashboard" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="welcome-badge"><i data-lucide="user"></i> Patient Portal</span>
+          <h1 style="color: #fff;">Patient Dashboard</h1>
+        </div>
+        <button class="btn-primary-glow" onclick="app.startAssessment()" style="padding: 0.6rem 1.5rem; font-size: 0.95rem;">
+          <i data-lucide="plus"></i> New Assessment
+        </button>
+      </div>
+
+      <!-- Patient Summary Metrics -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-icon"><i data-lucide="activity"></i></div>
+          <div class="metric-info">
+            <h3 id="patMetricsId">SM-2026-8942</h3>
+            <p>Active Patient ID</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="color: var(--teal-400); background: rgba(20, 184, 166, 0.15);"><i data-lucide="calendar"></i></div>
+          <div class="metric-info">
+            <h3>Aug 10, 2026</h3>
+            <p>Next Doctor Consult</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="color: var(--amber-500); background: rgba(245, 158, 11, 0.15);"><i data-lucide="file-text"></i></div>
+          <div class="metric-info">
+            <h3 id="patScansCount">1 Scan</h3>
+            <p>Medical Image Uploaded</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;">
+        
+        <!-- Health Profile Card -->
+        <div class="glass-card">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="heart" style="color: var(--rose-500);"></i> Health Summary
+          </h3>
+          <div id="patientHealthSummaryBox" style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Uploaded Images & Scans -->
+        <div class="glass-card">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="image" style="color: var(--primary-400);"></i> Uploaded Scans & Reports
+          </h3>
+          <div id="patientScansListBox">
+            <!-- Scans listed here -->
+          </div>
+        </div>
+
+        <!-- Doctor Notes & Diagnosis -->
+        <div class="glass-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i data-lucide="file-heart" style="color: var(--teal-400);"></i> Specialist Review & Doctor Notes
+          </h3>
+          <div id="patientDoctorNotesBox" style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-glass); border-radius: 1rem; padding: 1.5rem;">
+            <!-- Doctor feedback rendered here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         DOCTOR REVIEW DASHBOARD & DICOM WORKSTATION
+         ========================================================================= -->
+    <section id="view-doctor-dashboard" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="welcome-badge"><i data-lucide="microscope"></i> Clinical Workstation</span>
+          <h1 style="color: #fff;">Doctor Review & DICOM Dashboard</h1>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <span class="urgency-badge urgency-medium" style="display: flex; align-items: center; gap: 0.4rem;">
+            <i data-lucide="user-check"></i> Dr. Robert Vance, MD
+          </span>
+        </div>
+      </div>
+
+      <div class="dicom-workstation">
+        <!-- Patient Triage Sidebar Queue -->
+        <div class="dicom-sidebar">
+          <div class="glass-card" style="padding: 1.25rem;">
+            <h4 style="color: #fff; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>Patient Queue</span>
+              <span style="font-size: 0.8rem; background: var(--primary-600); padding: 0.2rem 0.6rem; border-radius: 999px;">3 Triage</span>
+            </h4>
+
+            <div id="doctorQueueList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <!-- Dynamically populated patient triage queue -->
+            </div>
+          </div>
+
+          <!-- Doctor Diagnosis Form -->
+          <div class="glass-card" style="padding: 1.25rem;">
+            <h4 style="color: #fff; margin-bottom: 1rem;"><i data-lucide="pen-tool"></i> Clinical Diagnosis</h4>
+            
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="docDiagnosisInput">Doctor Findings & Notes</label>
+              <textarea id="docDiagnosisInput" class="form-textarea" style="min-height: 90px; font-size: 0.9rem;" placeholder="Enter clinical assessment..."></textarea>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+              <input type="checkbox" id="approveAiCheck" checked style="width: 18px; height: 18px; accent-color: var(--primary-500);">
+              <label for="approveAiCheck" style="font-size: 0.85rem; color: #fff;">Approve AI Preliminary Finding</label>
+            </div>
+
+            <button class="btn-primary-glow" style="width: 100%; justify-content: center; font-size: 0.95rem; padding: 0.75rem;" onclick="app.saveDoctorDiagnosis()">
+              <i data-lucide="check"></i> Submit Report & Notify Patient
+            </button>
+          </div>
+        </div>
+
+        <!-- DICOM Scan Viewer Canvas Workstation -->
+        <div class="dicom-canvas-wrapper">
+          <!-- Toolbar Header -->
+          <div class="dicom-toolbar">
+            <div class="tool-group">
+              <span style="color: var(--teal-400); font-weight: 700; font-size: 0.9rem;" id="currentScanTitle">Chest X-Ray DICOM</span>
+            </div>
+
+            <!-- Manipulation Tools -->
+            <div class="tool-group">
+              <button class="tool-btn" onclick="app.adjustZoom(1.2)" title="Zoom In"><i data-lucide="zoom-in"></i></button>
+              <button class="tool-btn" onclick="app.adjustZoom(0.8)" title="Zoom Out"><i data-lucide="zoom-out"></i></button>
+              <button class="tool-btn" onclick="app.rotateScan()" title="Rotate 90°"><i data-lucide="rotate-cw"></i></button>
+              <button class="tool-btn" onclick="app.toggleInvert()" title="Invert Colors"><i data-lucide="contrast"></i></button>
+              <button class="tool-btn" onclick="app.toggleCompareMode()" id="compareModeBtn" title="Compare Scans"><i data-lucide="columns"></i> Compare</button>
+              <button class="tool-btn" onclick="app.resetScanCanvas()" title="Reset Canvas"><i data-lucide="refresh-cw"></i></button>
+            </div>
+
+            <!-- Brightness & Contrast Sliders -->
+            <div class="tool-group" style="gap: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Bright:</span>
+                <input type="range" min="50" max="200" value="100" style="width: 70px;" oninput="app.updateBrightness(this.value)">
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span>Contrast:</span>
+                <input type="range" min="50" max="200" value="100" style="width: 70px;" oninput="app.updateContrast(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Viewport View area -->
+          <div class="viewport-container">
+            <div class="dicom-overlay-info" id="dicomOverlay">
+              PATIENT: Sarah Jenkins (SM-2026-8942)<br>
+              STUDY: Chest Radiography PA View<br>
+              MODALITY: DX | WINDOW: 400 / 2000
+            </div>
+
+            <!-- Side by Side Comparative Viewport Grid -->
+            <div style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;" id="canvasGridContainer">
+              <canvas id="dicomCanvas" width="600" height="480"></canvas>
+              <canvas id="compareCanvas" width="600" height="480" style="display: none; border-left: 2px solid var(--primary-500);"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ADMIN DASHBOARD & SYSTEM ANALYTICS
+         ========================================================================= -->
+    <section id="view-admin-dashboard" class="view-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <span class="welcome-badge"><i data-lucide="layout-dashboard"></i> Enterprise Admin</span>
+          <h1 style="color: #fff;">Admin & System Analytics</h1>
+        </div>
+      </div>
+
+      <!-- Admin Overview Metrics Cards -->
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-icon"><i data-lucide="users"></i></div>
+          <div class="metric-info">
+            <h3>1,248</h3>
+            <p>Registered Patients</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="color: var(--teal-400); background: rgba(20, 184, 166, 0.15);"><i data-lucide="user-cog"></i></div>
+          <div class="metric-info">
+            <h3>42</h3>
+            <p>Active Doctors</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="color: var(--indigo-500); background: rgba(99, 102, 241, 0.15);"><i data-lucide="building-2"></i></div>
+          <div class="metric-info">
+            <h3>9</h3>
+            <p>Medical Departments</p>
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-icon" style="color: var(--rose-500); background: rgba(244, 63, 94, 0.15);"><i data-lucide="file-digit"></i></div>
+          <div class="metric-info">
+            <h3>3,890</h3>
+            <p>DICOM Scans Processed</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="glass-card">
+          <h4 style="color: #fff; margin-bottom: 1rem;">Department Intake Load</h4>
+          <div style="height: 260px; position: relative;">
+            <canvas id="deptChart"></canvas>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h4 style="color: #fff; margin-bottom: 1rem;">Triage Urgency Breakdown</h4>
+          <div style="height: 260px; position: relative;">
+            <canvas id="urgencyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Management Data Table -->
+      <div class="glass-card">
+        <h4 style="color: #fff; margin-bottom: 1rem;">Recent Patient Intake Audit Logs</h4>
+        <div class="data-table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Patient ID</th>
+                <th>Full Name</th>
+                <th>Department</th>
+                <th>Chief Complaint</th>
+                <th>Urgency Level</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       EMERGENCY MODAL DIALOG
+       ========================================================================= -->
+  <div class="modal-overlay" id="emergencyModal">
+    <div class="modal-content">
+      <div style="display: flex; align-items: center; gap: 1rem; color: var(--rose-500); margin-bottom: 1rem;">
+        <i data-lucide="alert-triangle" style="font-size: 2.5rem;"></i>
+        <div>
+          <h2 style="color: #fff;">Medical Emergency Services</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Immediate Critical Care Assistance</p>
+        </div>
+      </div>
+
+      <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid var(--rose-500); border-radius: 1rem; padding: 1.25rem; margin-bottom: 1.5rem;">
+        <p style="color: #fff; font-weight: 600; margin-bottom: 0.5rem;">
+          If you are experiencing severe chest pain, extreme shortness of breath, sudden numbness, or heavy bleeding, please call emergency services immediately.
+        </p>
+        <div style="font-size: 1.75rem; font-weight: 800; color: #fda4af; font-family: monospace;">
+          📞 Dial 911 / Emergency Hotline: 1-800-BDD-MEDS
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+        <button class="btn-secondary-glass" onclick="app.closeEmergencyModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Master Application Logic Script -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>
